@@ -11,3 +11,9 @@ resource "onepassword_item_credit_card" "this" {
     valid_from  = 201805
   }
 }
+
+
+resource "onepassword_group_vault" "test" {
+    group=onepassword_group.test1.id
+    vault=onepassword_vault.test2.id
+}

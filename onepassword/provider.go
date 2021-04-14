@@ -55,10 +55,12 @@ func Provider() *schema.Provider {
 				},
 				Description: "Set alternative subdomain for 1password. From [subdomain].1password.com",
 			},
+
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"onepassword_group":                 resourceGroup(),
 			"onepassword_group_member":          resourceGroupMember(),
+			"onepassword_group_vault":          	resourceGroupVault(),
 			"onepassword_item_common":           resourceItemCommon(),
 			"onepassword_item_software_license": resourceItemSoftwareLicense(),
 			"onepassword_item_identity":         resourceItemIdentity(),
@@ -68,6 +70,7 @@ func Provider() *schema.Provider {
 			"onepassword_item_document":         resourceItemDocument(),
 			"onepassword_item_login":            resourceItemLogin(),
 			"onepassword_vault":                 resourceVault(),
+			"onepassword_vault_member":			resourceGroupVault(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"onepassword_group":                 dataSourceGroup(),

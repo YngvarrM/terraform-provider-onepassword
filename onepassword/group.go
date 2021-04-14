@@ -53,6 +53,23 @@ func (o *OnePassClient) ListGroupMembers(id string) ([]User, error) {
 	return users, nil
 }
 
+// ListGroupVaults lists the existing Users in a given Group
+func (o *OnePassClient) ListGroupVaults(id string) ([]Vault, error) {
+	vaults := []Vault{}
+	if id == "" {
+		return vaults, fmt.Errorf("Must provide an identifier to list group members")
+	}
+
+	res, err := o.runCmd(opPasswordList, "vaults", "--"+GroupResource, id)
+	if err != nil {
+		return nil, err
+	}
+	if err = json.Unmarshal(res, &vaults); err != nil {
+		return nil, err
+	}
+	return vaults, nil
+}
+
 // CreateGroup creates a new 1Password Group
 func (o *OnePassClient) CreateGroup(v *Group) (*Group, error) {
 	args := []string{opPasswordCreate, GroupResource, v.Name}
@@ -69,6 +86,20 @@ func (o *OnePassClient) CreateGroup(v *Group) (*Group, error) {
 // CreateGroupMember adds a User to a Group
 func (o *OnePassClient) CreateGroupMember(groupID string, userID string) error {
 	args := []string{opPasswordAdd, UserResource, userID, groupID}
+	_, err := o.runCmd(args...)
+	return err
+}
+
+// CreateGroupVault adds a Vault to a Group
+func (o *OnePassClient) CreateGroupVault(groupID string, vaultID string) error {
+	args := []string{opPasswordAdd, GroupResource, vaultID, groupID}
+	_, err := o.runCmd(args...)
+	return err
+}
+
+// DeleteGroupVault removes a Vault from a Group
+func (o *OnePassClient) DeleteGroupVault(groupID string, vaultID string) error {
+	args := []string{opPasswordRemove, GroupResource, groupID, vaultID}
 	_, err := o.runCmd(args...)
 	return err
 }
@@ -91,3 +122,5 @@ func (o *OnePassClient) DeleteGroupMember(groupID string, userID string) error {
 	_, err := o.runCmd(args...)
 	return err
 }
+
+

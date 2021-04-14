@@ -14,6 +14,8 @@ resource "onepassword_group" "this" {
 
 * `name` - (Required) group name.
 
+* `incognito` - (Optional) Terraform will automatically remove your user from this resource after creation.
+
 ## Attribute Reference
 
 In addition to the above arguments, the following attributes are exported:

@@ -3,7 +3,6 @@ package onepassword
 import (
 	"context"
 	"errors"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -30,6 +29,12 @@ func resourceGroup() *schema.Resource {
 			"state": {
 				Type:     schema.TypeString,
 				Computed: true,
+			},
+			"incognito": {
+				Type:     schema.TypeBool,
+				Optional:    true,
+				Default: false,
+				Description: "Remove resource creator from resource",
 			},
 		},
 	}
@@ -59,12 +64,22 @@ func resourceGroupRead(ctx context.Context, d *schema.ResourceData, meta interfa
 
 func resourceGroupCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	m := meta.(*Meta)
-	_, err := m.onePassClient.CreateGroup(&Group{
+	g, err := m.onePassClient.CreateGroup(&Group{
 		Name: d.Get("name").(string),
 	})
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	if d.Get("incognito") == true {
+		err1 := m.onePassClient.DeleteGroupMember(
+			g.UUID,
+			m.onePassClient.Email,
+		)
+		if err1 != nil {
+			return diag.FromErr(err)
+		}
+	}
+	d.Set("Id",g.UUID)
 	return resourceGroupRead(ctx, d, meta)
 }
 
